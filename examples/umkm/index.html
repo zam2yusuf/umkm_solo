@@ -15,6 +15,9 @@
 		<script src="../../leaflet.geocsv-src.js"></script>
 
 		<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+		
+		<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+		<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
 		<style>	
 		html, body, #map {
@@ -95,6 +98,8 @@ googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
     subdomains:['mt0','mt1','mt2','mt3']
 });
 googleStreets.addTo(map);
+
+L.Control.geocoder().addTo(map);
 
 var umkm = L.geoCsv(null, {
 	onEachFeature: function (feature, layer) {
