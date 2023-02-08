@@ -10,14 +10,15 @@
 
 		<link rel="stylesheet" href="../../lib/MarkerCluster.css" />
 		<link rel="stylesheet" href="../../lib/MarkerCluster.Default.css" />
+		
+		<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+		<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+		
 		<script src="../../lib/leaflet.markercluster-src.js"></script>
 
 		<script src="../../leaflet.geocsv-src.js"></script>
 
 		<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
-		
-		<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-		<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
 		<style>	
 		html, body, #map {
@@ -99,8 +100,6 @@ googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
 });
 googleStreets.addTo(map);
 
-L.Control.geocoder().addTo(map);
-
 var umkm = L.geoCsv(null, {
 	onEachFeature: function (feature, layer) {
 		var popup = '';
@@ -154,6 +153,8 @@ $('#location').click(function(e) {
 		$('#location').text('UMKM Surakarta');
 	});
 });
+
+L.Control.geocoder().addTo(map);	
 
 //});
 </script>
