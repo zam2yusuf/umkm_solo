@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+		<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+		<link rel="stylesheet" href="../../lib/MarkerCluster.css" />
+		<link rel="stylesheet" href="../../lib/MarkerCluster.Default.css" />
+		<script src="../../lib/leaflet.markercluster-src.js"></script>
+
+		<script src="../../leaflet.geocsv-src.js"></script>
+
+		<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+
+		<style>	
+		html, body, #map {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;	
+			font-family: Arial, sans-serif;
+			font-color: #38383;
+		}
+
+		#botonera {
+			position:fixed;
+			top:10px;
+			left:50px;
+			z-index: 2;
+		}
+
+		#load {
+			position:fixed;
+			top:0;
+			left:0;
+			width:100%;
+			height:100%;
+			background-color:#666;
+			color:#fff;
+			font-size:2em;
+			padding:20% 40%;
+			z-index:10;
+		}
+
+		.boton {
+			border: 1px solid #96d1f8;
+			background: #65a9d7;
+			background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+			background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+			background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+			background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+			background: -o-linear-gradient(top, #3e779d, #65a9d7);
+			padding: 12px 24px;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
+			-webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+			-moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+			box-shadow: rgba(0,0,0,1) 0 1px 0;
+			text-shadow: rgba(0,0,0,.4) 0 1px 0;
+			color: white;
+			font-size: 17px;
+			/*font-family: Helvetica, Arial, Sans-Serif;*/
+			text-decoration: none;
+			vertical-align: middle;
+		}
+		.boton:hover {
+			border-top-color: #28597a;
+			background: #28597a;
+			color: #ccc;
+		}
+		.boton:active {
+			border-top-color: #1b435e;
+			background: #1b435e;
+		}
+		</style>
+	</head>
+	<body>
+		<div id="map"></div>
+		<div id="load">Loading...</div>
+
+<script>
+
+//;$(function() {
+
+var map = L.map('map').setView([-7.562031776644244, 110.81144415234199], 12);
+
+googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+	minZoom: 12,
+    subdomains:['mt0','mt1','mt2','mt3']
+});
+googleStreets.addTo(map);
+
+var umkm = L.geoCsv(null, {
+	onEachFeature: function (feature, layer) {
+		var popup = '';
+		for (var clave in feature.properties) {
+			var title = umkm.getPropertyTitle(clave);
+			popup += '<b>'+title+'</b><br />'+feature.properties[clave]+'<br /><br />';
+		}
+		layer.bindPopup(popup);
+	},
+	pointToLayer: function (feature, latlng) {
+		return L.marker(latlng, {
+			icon:L.icon({
+				iconUrl: 'marker-umkm.png',
+				shadowUrl: 'marker-shadow.png',
+				iconSize: [25,41],
+				shadowSize:   [41, 41],
+				shadowAnchor: [13, 20]
+			})
+		});
+	},
+	firstLineTitles: true,
+	debug: true,
+	fieldSeparator: ';'
+});
+
+$.ajax ({
+	type:'GET',
+	dataType:'text',
+	url:'https://raw.githubusercontent.com/zam2yusuf/umkm-solo/main/umkm.csv',
+   error: function() {
+     alert('Could not load data');
+   },
+	success: function(csv) {
+      var cluster = new L.MarkerClusterGroup();
+		umkm.addData(csv);
+		cluster.addLayer(umkm);
+		map.addLayer(cluster);
+		map.fitBounds(cluster.getBounds());
+	},
+   complete: function() {
+      $('#load').delay(500).fadeOut('slow');
+   }
+});
+
+
+$('#location').click(function(e) {
+	map.locate();
+	$('#location').text('Locating...');
+	map.on('locationfound', function(e) { 
+		map.setView(e.latlng, 15);
+		$('#location').text('UMKM Surakarta');
+	});
+});
+
+//});
+</script>
+
+	</body>
+</html>
